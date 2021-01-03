@@ -119,7 +119,9 @@ Specify at which interval (seconds) the same (90°) direction should be repeated
 See the section *"Interval (45)"* above for a similar demo.
 
 ### Move joystick to its center when released
-When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at the position where it has been released.    
+When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at the position where it has been released.
+
+Remark: when this option is disabled, it is not possible to set *"Interval (45)"* or *"Interval (90)"*.  Because those timers are automatically stopped when the joystick is reset back to the center.  But when automatic centering is disabled, the timers would keep running...
 
 ## Use case
 
