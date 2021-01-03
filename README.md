@@ -120,5 +120,30 @@ See the section *"Interval (45)"* above for a similar demo.
 
 ## Use case
 
-A possible ***use case*** could be controlling a PTZ camera, e.g. via the [PTZ node](https://github.com/bartbutenaers/node-red-contrib-onvif-nodes#ptz-node).
-Note that I don't have an example flow for this yet.  So if anybody exceeds in implementing this, please share your flow with me!!!
+### PTZ camera control
+
+The joystick node can be used to control a PTZ camera, e.g. via Onvif using my [PTZ node](https://github.com/bartbutenaers/node-red-contrib-onvif-nodes#ptz-node).
+
+1. The first part of the flow is used to capture snapshot images from my IP camera, and display them on the dashboard via a Template node:
+
+   ![snapshot flow](https://user-images.githubusercontent.com/14224149/103487963-5ef94a00-4e09-11eb-8396-699fb8250b5c.png)
+   ```
+   [{"id":"9222487b.a42538","type":"inject","z":"42b7b639.325dd8","name":"Get snapshot image","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"1","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"","payloadType":"date","x":240,"y":660,"wires":[["d2721583.b94c08"]]},{"id":"d2721583.b94c08","type":"onvif-media","z":"42b7b639.325dd8","name":"","deviceConfig":"e6c78b2e.fe4dc8","profileToken":"","profileName":"JPEG_640x480","videoEncoderConfigToken":"","videoEncoderConfigName":"","videoEncoderConfigEncoding":"","action":"getSnapshot","protocol":"HTTP","stream":"RTP-Unicast","x":470,"y":660,"wires":[["6535feb.cbf33"]]},{"id":"6535feb.cbf33","type":"base64","z":"42b7b639.325dd8","name":"Encode","x":640,"y":660,"wires":[["fb64a032.e945b"]]},{"id":"fb64a032.e945b","type":"ui_template","z":"42b7b639.325dd8","group":"a434ad35.e8a6b","name":"Display image","order":1,"width":"6","height":"6","format":"<img width=\"16\" height=\"16\" src=\"data:image/jpg;base64,{{msg.payload}}\" />\n","storeOutMessages":true,"fwdInMessages":true,"resendOnRefresh":false,"templateScope":"local","x":820,"y":660,"wires":[[]]},{"id":"e6c78b2e.fe4dc8","type":"onvif-config","z":"","xaddress":"192.168.1.200","port":"80","name":"MyCamKitchen"},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"12","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
+   ```
+
+   Remarks:
+      + This flow requires that the [node-red-node-base64](https://flows.nodered.org/node/node-red-node-base64) node has been installed.
+      + This way of working is not optimal, but it is out of scope of this readme page to describe better ways to capture and show images ...
+      
+2. The second part of the flow uses the joystick output direction (up/down/left/right) to control the PTZ node:
+
+   ![ptz flow](https://user-images.githubusercontent.com/14224149/103488060-19894c80-4e0a-11eb-82c0-6fcfc003000d.png)
+   ```
+   [{"id":"b0e29a85.ddadd8","type":"change","z":"42b7b639.325dd8","name":"Right","rules":[{"t":"set","p":"pan_speed","pt":"msg","to":"0.5","tot":"num"},{"t":"set","p":"action","pt":"msg","to":"continuousMove","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":630,"y":900,"wires":[["ae6ba1c6.feaca"]]},{"id":"cb460270.dd29a","type":"change","z":"42b7b639.325dd8","name":"Left","rules":[{"t":"set","p":"pan_speed","pt":"msg","to":"-0.5","tot":"num"},{"t":"set","p":"action","pt":"msg","to":"continuousMove","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":630,"y":860,"wires":[["ae6ba1c6.feaca"]]},{"id":"ba7642a3.669b","type":"change","z":"42b7b639.325dd8","name":"Up","rules":[{"t":"set","p":"tilt_speed","pt":"msg","to":"0.5","tot":"num"},{"t":"set","p":"action","pt":"msg","to":"continuousMove","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":630,"y":780,"wires":[["ae6ba1c6.feaca"]]},{"id":"26d9a08c.8af38","type":"change","z":"42b7b639.325dd8","name":"Down","rules":[{"t":"set","p":"tilt_speed","pt":"msg","to":"-0.5","tot":"num"},{"t":"set","p":"action","pt":"msg","to":"continuousMove","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":630,"y":820,"wires":[["ae6ba1c6.feaca"]]},{"id":"ae6ba1c6.feaca","type":"onvif-ptz","z":"42b7b639.325dd8","name":"","deviceConfig":"e6c78b2e.fe4dc8","profileName":"","action":"","panSpeed":0,"tiltSpeed":0,"zoomSpeed":0,"panPosition":0,"tiltPosition":0,"zoomPosition":0,"panTranslation":0,"tiltTranslation":0,"zoomTranslation":0,"time":1,"preset":"","presetName":"","stopPanTilt":true,"stopZoom":true,"configurationToken":"","x":818,"y":780,"wires":[[]]},{"id":"2b63418.49e47be","type":"ui_joystick","z":"42b7b639.325dd8","group":"a434ad35.e8a6b","order":2,"width":"4","height":"4","name":"","useThemeColor":true,"color":"#00ffd0","threshold":"0.1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":false,"send90Directions":true,"timeInterval45":"1","timeInterval90":"1","x":180,"y":800,"wires":[["5c2f97d4.c84738"]]},{"id":"5c2f97d4.c84738","type":"switch","z":"42b7b639.325dd8","name":"payload.direction.angle","property":"payload.direction.angle","propertyType":"msg","rules":[{"t":"eq","v":"up","vt":"str"},{"t":"eq","v":"down","vt":"str"},{"t":"eq","v":"left","vt":"str"},{"t":"eq","v":"right","vt":"str"}],"checkall":"true","repair":false,"outputs":4,"x":390,"y":800,"wires":[["ba7642a3.669b"],["26d9a08c.8af38"],["cb460270.dd29a"],["b0e29a85.ddadd8"]],"outputLabels":["up","down","left","right"]},{"id":"e6c78b2e.fe4dc8","type":"onvif-config","z":"","xaddress":"192.168.1.200","port":"80","name":"MyCamKitchen"},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"12","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
+   ```
+   
+   Remark: This flow requires that the [node-red-contrib-onvif-nodes](https://github.com/bartbutenaers/node-red-contrib-onvif-nodes) node has been installed directly from my Github account (since it is not published on NPM yet).  And you need to configure your username and password in the Onvif config node...
+
+3. This is the final result:
+
+   ![ptz_demo](https://user-images.githubusercontent.com/14224149/103488198-e4c9c500-4e0a-11eb-988d-212cf75567a3.gif)
