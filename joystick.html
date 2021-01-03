@@ -38,7 +38,9 @@
             shape: {value: "circle"},
             sendMovements: {value: true},
             send45Directions: {value: false},
-            send90Directions: {value: false}
+            send90Directions: {value: false},
+            timeInterval45: {value: 0},
+            timeInterval90: {value: 0}
         },
         inputs:1,
         outputs:1,
@@ -65,6 +67,28 @@
                 }
             });
             $("#node-input-useThemeColor").change();
+            
+            // Only show the timer(45) input field, when the 'output at 45° angle' checkbox is checked
+            $("#node-input-send45Directions").change(function() {
+                if(this.checked) {
+                    $("#timeInterval45Div").show();
+                }
+                else {
+                    $("#timeInterval45Div").hide();
+                }
+            });
+            $("#node-input-send45Directions").change();            
+
+            // Only show the timer(90) input field, when the 'output at 90° angle' checkbox is checked
+            $("#node-input-send90Directions").change(function() {
+                if(this.checked) {
+                    $("#timeInterval90Div").show();
+                }
+                else {
+                    $("#timeInterval90Div").hide();
+                }
+            });
+            $("#node-input-send90Directions").change();    
         }
     });
 </script>
@@ -115,9 +139,17 @@
         <input type="checkbox" id="node-input-send45Directions" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-send45Directions" style="width:70%;"> Send output msg at 45° direction change</label>
     </div>
+    <div class="form-row" id="timeInterval45Div">
+        <label for="node-input-timeInterval45"><i class="fa fa-clock-o"></i> Interval (45)</label>
+        <input type="number" id="node-input-timeInterval45" min="0" step="0.1">
+    </div>
     <div class="form-row">
         <input type="checkbox" id="node-input-send90Directions" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-send90Directions" style="width:70%;"> Send output msg at 90° direction change</label>
+    </div>
+    <div class="form-row" id="timeInterval90Div">
+        <label for="node-input-timeInterval90"><i class="fa fa-clock-o"></i> Interval (90)</label>
+        <input type="number" id="node-input-timeInterval90" min="0" step="0.1">
     </div>
 </script>
 <script type="text/x-red" data-help-name="ui_joystick">
@@ -144,7 +176,11 @@
     <p><strong>Send output msg at every change:</strong><br/>
     When activated, output messages will be send for every moment.</p>     
     <p><strong>Send output msg at 45° direction change:</strong><br/>
-    When activated, output messages will be send as soon as a direction (at 45° angle) has been determined (after reaching the threshold).</p>     
+    When activated, output messages will be send as soon as a direction (at 45° angle) has been determined (after reaching the threshold).</p>
+    <p><strong>Interval (45):</strong><br/>
+    Specify at which interval (seconds) the same (45°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>     
     <p><strong>Send output msg at 90° direction change:</strong><br/>
-    When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p>     
+    When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p>
+    <p><strong>Interval (90):</strong><br/>
+    Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>         
 </script>
