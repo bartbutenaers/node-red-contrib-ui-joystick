@@ -72,10 +72,28 @@ When activated, output messages will be send as soon as a direction has been det
 
 ![45 degrees](https://user-images.githubusercontent.com/14224149/103476549-2fb9ed00-4db7-11eb-99be-4d5bb2724fb6.png)
 
+As in the following example flow:
+
+![45 degrees flow](https://user-images.githubusercontent.com/14224149/103481520-d4e6bc80-4ddb-11eb-8a97-fe2f367fcbcc.png)
+```
+[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff1900","threshold":"1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":true,"send90Directions":false,"x":1100,"y":620,"wires":[["1dba6d92.cd0762"]]},{"id":"1dba6d92.cd0762","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload.direction.angle","targetType":"msg","statusVal":"","statusType":"auto","x":1320,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
+```
+
+![joystick_45_demo](https://user-images.githubusercontent.com/14224149/103481566-22fbc000-4ddc-11eb-80b5-b4c220f1ea31.gif)
+
 ### Send output msg at 90° direction change
 When activated, output messages will be send as soon as a plain direction has been determined (after reaching the threshold).  In this case the directions are split with a 90° angle:
 
 ![90 degrees](https://user-images.githubusercontent.com/14224149/103476600-9e974600-4db7-11eb-858a-2367cc0a1031.png)
+
+As in the following example flow:
+
+![image](https://user-images.githubusercontent.com/14224149/103481634-930a4600-4ddc-11eb-9dd2-07f96d28bee7.png)
+```
+[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff1900","threshold":"1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":false,"send90Directions":true,"x":1100,"y":620,"wires":[["1dba6d92.cd0762"]]},{"id":"1dba6d92.cd0762","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload.direction.angle","targetType":"msg","statusVal":"","statusType":"auto","x":1320,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
+```
+
+![joystick_90_demo](https://user-images.githubusercontent.com/14224149/103481620-7837d180-4ddc-11eb-8d0b-f3fd11357c71.gif)
 
 ## Use case
 
