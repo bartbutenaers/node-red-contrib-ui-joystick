@@ -181,16 +181,58 @@ module.exports = function(RED) {
                                         sendOutputMsg(evt, data);
                                     });
                                 }
-                                
+
+                                // Fortunately there is an (undocumented) event "rested", which is called when the joystick is releaved an goes
+                                // back to the center point automatically ...
+                                manager.on('rested', function (evt, data) {
+                                    // Stop the previous timers, when available
+                                    if ($scope.timer45) {
+                                        clearInterval($scope.timer45);
+                                        $scope.timer45 = null;
+                                    }
+                                    if ($scope.timer90) {
+                                        clearInterval($scope.timer90);
+                                        $scope.timer90 = null;
+                                    }
+                                });
+
                                 if (config.send45Directions) {
                                     manager.on('dir', function (evt, data) {
+                                        // Stop the previous timer, when available
+                                        if ($scope.timer45) {
+                                            clearInterval($scope.timer45);
+                                            $scope.timer45 = null;
+                                        }
+                                        
                                         sendOutputMsg(evt, data);
+                                        
+                                        // Start a new timer, when an interval (greater than 0) has been specified
+                                        if (config.timeInterval45 > 0) {
+                                            $scope.timer45 = setInterval(function() {
+                                                // Resend the last output message again
+                                                sendOutputMsg(evt, data);
+                                            }, config.timeInterval45 * 1000);
+                                        }
                                     });
                                 }
                                 
                                 if (config.send90Directions) {
                                    manager.on('plain', function (evt, data) {
+                                        // Stop the previous timer, when available
+                                        if ($scope.timer90) {
+                                            clearInterval($scope.timer90);
+                                            $scope.timer90 = null;
+                                        }
+                                        
                                         sendOutputMsg(evt, data);
+                                        
+                                        // Start a new timer, when an interval (greater than 0) has been specified
+                                        if (config.timeInterval90 > 0) {
+                                            $scope.timer90 = setInterval(function() {
+                                                // Resend the last output message again
+                                                sendOutputMsg(evt, data);
+                                            }, config.timeInterval90 * 1000);
+                                        }
                                     });
                                 }
                             }, 200);
