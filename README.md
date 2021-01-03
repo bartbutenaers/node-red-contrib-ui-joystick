@@ -43,27 +43,36 @@ Specify whether the shape of region - within which joystick can move - needs to 
 
 ![Shapes](https://user-images.githubusercontent.com/14224149/103475945-e9ae5a80-4db1-11eb-9b96-52ac94b035e4.png)
 
-### Color
-Specify the CSS color of the joystick's center circle.  The outer circle will get automatically a reduced color:
-
-![image](https://user-images.githubusercontent.com/14224149/103476126-5f66f600-4db3-11eb-8d05-906fe3789252.png)
-    
 ### Threshold
 Specify the minimum distance needed to trigger an output message.  This is a value between 0 and 1:
 + `0`: the center of the joystick, so the output message will always be sent.
 + `1`: the outer boundary of the joystick, which means that only an output message will be send when the joystick reaches the boundaries.
 
-![image](https://user-images.githubusercontent.com/14224149/103476432-bcfc4200-4db5-11eb-9deb-b8028350b920.png)
+![Threshold](https://user-images.githubusercontent.com/14224149/103476432-bcfc4200-4db5-11eb-9deb-b8028350b920.png)
 
-### Send output msg with movement info
+### Use the Node-RED theme base color
+When activated, the base color of the Node-RED dashboard theme will be used.  Otherwise a custom color needs to be specified.
+
+The following image shows the colors for the two standard Node-RED themes:
+
+![image](https://user-images.githubusercontent.com/14224149/103480965-1d9c7680-4dd8-11eb-9716-52cc506b1e48.png)
+
+### Color
+Specify a custom CSS color of the joystick's center circle.  The outer circle will get automatically a reduced color:
+
+![image](https://user-images.githubusercontent.com/14224149/103476126-5f66f600-4db3-11eb-8d05-906fe3789252.png)
+
+Remark: this property will only be displayed when the checkbox *"Use the Node-RED theme base color"* is not activated.
+
+### Send output msg at every change
 When activated, output messages will be send for every moment.  Note that this will cause lots of messages to be send!
 
-### Send output msg with 45° directions
+### Send output msg at 45° direction change
 When activated, output messages will be send as soon as a direction has been determined (after reaching the threshold).  In this case the directions are split with a 45° angle:
 
 ![45 degrees](https://user-images.githubusercontent.com/14224149/103476549-2fb9ed00-4db7-11eb-99be-4d5bb2724fb6.png)
 
-### Send output msg with 90° directions
+### Send output msg at 90° direction change
 When activated, output messages will be send as soon as a plain direction has been determined (after reaching the threshold).  In this case the directions are split with a 90° angle:
 
 ![90 degrees](https://user-images.githubusercontent.com/14224149/103476600-9e974600-4db7-11eb-858a-2367cc0a1031.png)
