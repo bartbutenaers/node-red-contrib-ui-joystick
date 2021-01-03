@@ -65,7 +65,18 @@ Specify a custom CSS color of the joystick's center circle.  The outer circle wi
 Remark: this property will only be displayed when the checkbox *"Use the Node-RED theme base color"* is not activated.
 
 ### Send output msg at every change
-When activated, output messages will be send for every moment.  Note that this will cause lots of messages to be send!
+When activated, output messages will be send for every moment.
+
+As in the following example flow:
+
+![every change](https://user-images.githubusercontent.com/14224149/103482260-242eec00-4de0-11eb-827a-9419c51a81f4.png)
+```
+[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff0400","threshold":"1","directions":"all","shape":"circle","sendMovements":true,"send45Directions":false,"send90Directions":false,"x":1100,"y":620,"wires":[["762cb5c1.d2c2ac"]]},{"id":"762cb5c1.d2c2ac","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":1290,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
+```
+
+![joystick_all_demo](https://user-images.githubusercontent.com/14224149/103482318-7c65ee00-4de0-11eb-91ac-65f8b921bf93.gif)
+
+CAUTION: a lot of messages will be sent!
 
 ### Send output msg at 45° direction change
 When activated, output messages will be send as soon as a direction has been determined (after reaching the threshold).  In this case the directions are split with a 45° angle:
