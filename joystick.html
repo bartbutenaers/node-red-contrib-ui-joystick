@@ -31,6 +31,7 @@
                 }},
             height: {value: 0},
             name: {value: ''},
+            useThemeColor: {value: true},
             color: {value: "white"},
             threshold: {value: 0.1, validate: function(v) { return v >= 0 && v <= 1}},
             directions: {value: "all"},
@@ -53,6 +54,17 @@
                 height: "#node-input-height",
                 group: "#node-input-group"
             });
+
+            // Only show the custom color input field, when the 'theme' checkbox is unchecked
+            $("#node-input-useThemeColor").change(function() {
+                if(this.checked) {
+                    $("#customColorDiv").hide();
+                }
+                else {
+                    $("#customColorDiv").show();
+                }
+            });
+            $("#node-input-useThemeColor").change();
         }
     });
 </script>
@@ -84,24 +96,28 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-color"><i class="fa fa-paint-brush"></i> Color</label>
-        <input type="color" id="node-input-color">
-    </div>
-    <div class="form-row">
         <label for="node-input-threshold"><i class="fa fa-signal"></i> Threshold</label>
         <input type="number" id="node-input-threshold" min="0" max="1" step="0.1">
     </div>
     <div class="form-row">
+        <input type="checkbox" id="node-input-useThemeColor" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-useThemeColor" style="width:70%;"> Use the Node-RED theme base color</label>
+    </div>
+    <div class="form-row" id = "customColorDiv">
+        <label for="node-input-color"><i class="fa fa-paint-brush"></i> Color</label>
+        <input type="color" id="node-input-color">
+    </div>
+    <div class="form-row">
         <input type="checkbox" id="node-input-sendMovements" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-sendMovements" style="width:70%;"> Send output msg with movement info</label>
+        <label for="node-input-sendMovements" style="width:70%;"> Send output msg at every change</label>
     </div>
     <div class="form-row">
         <input type="checkbox" id="node-input-send45Directions" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-send45Directions" style="width:70%;"> Send output msg with 45° directions°</label>
+        <label for="node-input-send45Directions" style="width:70%;"> Send output msg at 45° direction change</label>
     </div>
     <div class="form-row">
         <input type="checkbox" id="node-input-send90Directions" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-send90Directions" style="width:70%;"> Send output msg with 90° directions</label>
+        <label for="node-input-send90Directions" style="width:70%;"> Send output msg at 90° direction change</label>
     </div>
 </script>
 <script type="text/x-red" data-help-name="ui_joystick">
@@ -114,19 +130,21 @@
         <li><i>Only horizontal:</i> the joystick can only be moved horizontally.</li>
     </ul></p>
     <p><strong>Shape:</strong><br/>
-    Specify whether the shape of region - within which joystick can move - needs to be a circle or a square.</p> 
-    <p><strong>Color:</strong><br/>
-    Specify the CSS color of the joystick.</p> 
+    Specify whether the shape of region - within which joystick can move - needs to be a circle or a square.</p>
     <p><strong>Threshold:</strong><br/>
     Specify the minimum distance needed to trigger an output message.  This is a value between 0 and 1:
     <ul>
         <li><code>0</code>: the center of the joystick, so the output message will always be sent.</li>
         <li><code>1</code>: the outer boundary of the joystick, which means that only an output message will be send when the joystick reaches the boundaries.</li>
     </ul></p>
-    <p><strong>Send output msg with movement info:</strong><br/>
-    When activated, output messages will be send containing information (position, ...) about the movement.</p>     
-    <p><strong>Send output msg with 45° directions:</strong><br/>
-    When activated, output messages will be send containing directions (up/down/left/right), which are split with a 45° angle.</p>     
-    <p><strong>Send output msg with 90° directions:</strong><br/>
-    When activated, output messages will be send containing pl (up/down/left/right), which are split with a 90° angle.</p>     
+    <p><strong>Use the Node-RED theme base color:</strong><br/>
+    When activated, the base color of the Node-RED dashboard theme will be used.  Otherwise a custom color needs to be specified.</p>  
+    <p><strong>Color:</strong><br/>
+    Specify a custom CSS color of the joystick.</p> 
+    <p><strong>Send output msg at every change:</strong><br/>
+    When activated, output messages will be send for every moment.</p>     
+    <p><strong>Send output msg at 45° direction change:</strong><br/>
+    When activated, output messages will be send as soon as a direction (at 45° angle) has been determined (after reaching the threshold).</p>     
+    <p><strong>Send output msg at 90° direction change:</strong><br/>
+    When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p>     
 </script>
