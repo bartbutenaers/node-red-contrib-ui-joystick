@@ -40,7 +40,8 @@
             send45Directions: {value: false},
             send90Directions: {value: false},
             timeInterval45: {value: 0},
-            timeInterval90: {value: 0}
+            timeInterval90: {value: 0},
+            centerAtRelease: {value: true}
         },
         inputs:1,
         outputs:1,
@@ -151,6 +152,10 @@
         <label for="node-input-timeInterval90"><i class="fa fa-clock-o"></i> Interval (90)</label>
         <input type="number" id="node-input-timeInterval90" min="0" step="0.1">
     </div>
+    <div class="form-row">
+        <input type="checkbox" id="node-input-centerAtRelease" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-centerAtRelease" style="width:70%;"> Move joystick to its center when released</label>
+    </div>
 </script>
 <script type="text/x-red" data-help-name="ui_joystick">
     <p>A Node Red node to show a virtual joystick in the Node-RED dashboard.</p>
@@ -182,5 +187,7 @@
     <p><strong>Send output msg at 90° direction change:</strong><br/>
     When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p>
     <p><strong>Interval (90):</strong><br/>
-    Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>         
+    Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>  
+    <p><strong>Move joystick to its center when released:</strong><br/>
+    When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at its release position.</p>     
 </script>
