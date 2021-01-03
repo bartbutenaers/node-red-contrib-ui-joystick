@@ -46,7 +46,7 @@ module.exports = function(RED) {
 
     function checkConfig(node, conf) {
         if (!conf || !conf.hasOwnProperty("group")) {
-            node.error(RED._(joystick.error.no-group));
+            node.error("No group has been specified");
             return false;
         }
         return true;
@@ -60,6 +60,18 @@ module.exports = function(RED) {
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
             }
+            
+            if (config.useThemeColor) {
+                if(ui.getTheme){
+                    // When specified to use the theme color, replace the custom color in the config by the theme base color
+                    var theme = ui.getTheme();
+                    config.color = theme["base-color"].value;
+                }
+                else {
+                    node.warn("ui.getTheme() not available. Check dashboard version is up to date");
+                }
+            } 
+            
             RED.nodes.createNode(this, config);
 
             if (checkConfig(node, config)) { 
