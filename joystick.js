@@ -151,7 +151,7 @@ module.exports = function(RED) {
                                     dataOnly: false,                            // we don't want only data (i.e. nothing would be visualised via the DOM)*/
                                     position: {left:'50%', top:'50%'},          // preset position for 'static' mode, can be used to center the nipple in the middle
                                     mode: "static",                             // 'static' mode because the joystick always needs to be visible
-                                    restJoystick: true,                         // reset the joystick's position when it enters the rest state
+                                    restJoystick: config.centerAtRelease,       // reset the joystick's position when it enters the rest state
                                     restOpacity: 1,                             // opacity when the joystick is in a rest position, shouldn't be applied in our case
                                     catchDistance: 200,                         // at which distance we recycle the previous joystick (only useful in the 'semi' mode)
                                     shape: config.shape,                        // shape of region within which joystick can move
