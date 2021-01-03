@@ -118,6 +118,9 @@ Specify at which interval (seconds) the same (90°) direction should be repeated
 
 See the section *"Interval (45)"* above for a similar demo.
 
+### Move joystick to its center when released
+When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at the position where it has been released.    
+
 ## Use case
 
 ### PTZ camera control
