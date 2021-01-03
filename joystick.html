@@ -89,7 +89,22 @@
                     $("#timeInterval90Div").hide();
                 }
             });
-            $("#node-input-send90Directions").change();    
+            $("#node-input-send90Directions").change();
+
+            // Only show the timer(90) input field, when the 'output at 90° angle' checkbox is checked
+            $("#node-input-centerAtRelease").change(function() {
+                if(this.checked) {
+                    $("#node-input-timeInterval45").prop('disabled', false);
+                    $("#node-input-timeInterval90").prop('disabled', false);
+                }
+                else {
+                    $("#node-input-timeInterval45").prop('disabled', true);
+                    $("#node-input-timeInterval90").prop('disabled', true);
+                    $("#node-input-timeInterval45").val(0);
+                    $("#node-input-timeInterval90").val(0);                    
+                }
+            });
+            $("#node-input-centerAtRelease").change();             
         }
     });
 </script>
