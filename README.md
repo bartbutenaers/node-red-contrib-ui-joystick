@@ -92,6 +92,13 @@ As in the following example flow:
 
 ![joystick_45_demo](https://user-images.githubusercontent.com/14224149/103481566-22fbc000-4ddc-11eb-80b5-b4c220f1ea31.gif)
 
+### Interval (45)
+Specify at which interval (seconds) the same (45°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.
+
+In the following example flow the interval is set to 1 second, which means the same directions will be repeated every second.  This repeation wil stop when the direction changes or when the joystick is released (and goes back to its center):
+
+![joystick_timer](https://user-images.githubusercontent.com/14224149/103483512-06fe1b80-4de8-11eb-9b1b-1547d0c31453.gif)
+
 ### Send output msg at 90° direction change
 When activated, output messages will be send as soon as a plain direction has been determined (after reaching the threshold).  In this case the directions are split with a 90° angle:
 
@@ -105,6 +112,11 @@ As in the following example flow:
 ```
 
 ![joystick_90_demo](https://user-images.githubusercontent.com/14224149/103481620-7837d180-4ddc-11eb-8d0b-f3fd11357c71.gif)
+
+### Interval (90)
+Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.
+
+See the section *"Interval (45)"* above for a similar demo.
 
 ## Use case
 
