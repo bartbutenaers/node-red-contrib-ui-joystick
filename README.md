@@ -38,14 +38,18 @@ Remark: the angle is `0` when the joystick is at the right, and it goes anti-clo
 ## Node configuration
 
 ### Interval
-Specify at which interval (seconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center automatically or manually).  When the interval is `0`, the *"Trigger"* property determines which joystick events will cause the messages to be sent.
+Specify at which interval (seconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center automatically or manually).  
+
+Note: When the interval is `0`, this means that no timer will be started.  In that case, the *"Trigger"* property determines which joystick events will cause the messages to be sent.
     
 #### Trigger
-When no interval has been specified (i.e. interval = 0), you need to specify which joystick events will result in output messages (after crossing the threshold):
+When no interval has been specified (i.e. interval = 0), you need to specify which joystick events will trigger sending output messages (after crossing the threshold):
 
-+ *All*: for every move event.  Caution: a lot of messages will be sent to the Node-RED flow, when the joystick is being moved!
++ *All*: send a message for every move event.  
+   
+   Caution: a lot of messages will be sent to the Node-RED flow, when the joystick is being moved!
 
-+ *45° crossings*: when crossing a 45° angle boundary.
++ *45° crossings*: send a message only when crossing a 45° angle boundary.
 
    ![45 degrees](https://user-images.githubusercontent.com/14224149/103476549-2fb9ed00-4db7-11eb-99be-4d5bb2724fb6.png)
    
@@ -53,7 +57,7 @@ When no interval has been specified (i.e. interval = 0), you need to specify whi
 
    ![joystick_45_demo](https://user-images.githubusercontent.com/14224149/103481566-22fbc000-4ddc-11eb-80b5-b4c220f1ea31.gif)
    
-+ *90° crossings*: when crossing a 90° degree boundary.
++ *90° crossings*: send a message only when crossing a 90° degree boundary.
 
    ![90 degrees](https://user-images.githubusercontent.com/14224149/103476600-9e974600-4db7-11eb-858a-2367cc0a1031.png)
    
@@ -78,9 +82,9 @@ Specify whether the shape of region - within which joystick can move - needs to 
 ### Threshold
 Specify the minimum distance needed to trigger an output message.  This is a value between 0 and 1:
 
-+ `0`: the center of the joystick, so the output message will always be sent.
++ `0`: the center of the joystick, so the output message will always be sent (since joystick will exceed the threshold value everywhere).
 
-+ `1`: the outer boundary of the joystick, which means that only an output message will be send when the joystick reaches the boundaries.
++ `1`: the outer boundary of the joystick, which means that only an output message will be send when the joystick reaches the outer circle boundary.
 
 ![Threshold](https://user-images.githubusercontent.com/14224149/103476432-bcfc4200-4db5-11eb-9deb-b8028350b920.png)
 
