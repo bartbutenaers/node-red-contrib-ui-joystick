@@ -1,16 +1,13 @@
 # node-red-contrib-ui-joystick
 A Node-RED widget node to show a virtual joystick in the Node-RED dashboard
 
-Thanks to [Stephen McLaughlin](https://github.com/Steve-Mcl) for pointing me to the [nipplejs](https://github.com/yoannmoinet/nipplejs) library!
+Thanks to [Stephen McLaughlin](https://github.com/Steve-Mcl) for pointing me to the [nipplejs](https://github.com/yoannmoinet/nipplejs) library, and thanks to [Dave Conway-Jones](https://github.com/dceejay) for extensive testing and lots of useful feedback!
 
 ## Install
 Run the following npm command in your Node-RED user directory (typically ~/.node-red):
 ```
 npm install node-red-contrib-ui-joystick
 ```
-
-## Introduction to SVG
-Scalable Vector Graphics (SVG) is an XML-based vector image format for two-dimensional graphics with support for interactivity and animation. We won't explain here how it works, because the internet is full of information about it. 
 
 ## Support my Node-RED developments
 
@@ -23,20 +20,55 @@ Using this simple flow:
 
 ![image](https://user-images.githubusercontent.com/14224149/103476621-cd152100-4db7-11eb-8ec2-a0dec21edae3.png)
 ```
-[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"28a39865.fa3608","order":2,"width":"6","height":"6","name":"","color":"#ff1900","threshold":"1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":true,"send90Directions":false,"x":1160,"y":780,"wires":[["1dba6d92.cd0762"]]},{"id":"1dba6d92.cd0762","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","statusVal":"","statusType":"auto","x":1340,"y":780,"wires":[]},{"id":"28a39865.fa3608","type":"ui_group","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"6","collapse":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
+[{"id":"c548ba0b.22cff8","type":"ui_joystick","z":"42b7b639.325dd8","name":"","group":"a434ad35.e8a6b","order":2,"width":"4","height":"4","trigger":"all","timeInterval":"1","useThemeColor":true,"color":"#7b73c9","threshold":"0.1","directions":"all","shape":"circle","centerAtRelease":false,"x":1040,"y":880,"wires":[["95a5c0b0.e8645"]]},{"id":"95a5c0b0.e8645","type":"debug","z":"42b7b639.325dd8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":1210,"y":880,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"12","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
 ```
 
-You will get a joystick in the dashboard, which sends messages to your Node-RED flow.  The following demo sends a message everytime a (45° angle based) direction is detected:
+This flow will display a joystick in the dashboard, which sends messages to your Node-RED flow.  
+
+The following demo sends a message everytime a (45° angle based) direction is detected:
 
 ![joystick_demo](https://user-images.githubusercontent.com/14224149/103476760-ccc95580-4db8-11eb-8f09-e6639fc9e2ec.gif)
 
+Such an output message looks like this:
+
+![output msg](https://user-images.githubusercontent.com/14224149/103705569-90aa1680-4fab-11eb-8573-715caea6edf1.png)
+
+Remark: the angle is `0` when the joystick is at the right, and it goes anti-clockwise.
+
 ## Node configuration
+
+### Interval
+Specify at which interval (seconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center automatically or manually).  When the interval is `0`, the *"Trigger"* property determines which joystick events will cause the messages to be sent.
+    
+#### Trigger
+When no interval has been specified (i.e. interval = 0), you need to specify which joystick events will result in output messages (after crossing the threshold):
+
++ *All*: for every move event.  Caution: a lot of messages will be sent to the Node-RED flow, when the joystick is being moved!
+
++ *45° crossings*: when crossing a 45° angle boundary.
+
+   ![45 degrees](https://user-images.githubusercontent.com/14224149/103476549-2fb9ed00-4db7-11eb-99be-4d5bb2724fb6.png)
+   
+   Every time the joystick goes from one quadrant to another (outside the threshold), a message is being sent:
+
+   ![joystick_45_demo](https://user-images.githubusercontent.com/14224149/103481566-22fbc000-4ddc-11eb-80b5-b4c220f1ea31.gif)
+   
++ *90° crossings*: when crossing a 90° degree boundary.
+
+   ![90 degrees](https://user-images.githubusercontent.com/14224149/103476600-9e974600-4db7-11eb-858a-2367cc0a1031.png)
+   
+   Every time the joystick goes from one quadrant to another (outside the threshold), a message is being sent:
+   
+   ![joystick_90_demo](https://user-images.githubusercontent.com/14224149/103481620-7837d180-4ddc-11eb-8d0b-f3fd11357c71.gif)
 
 ### Directions
 Specify in which directions the joystick can be moved:
+
 + *All*: the joystick can be moved in all directions.
-+ *Only vertical*: the joystick can only be moved vertically.</li>
-+ *Only horizontal*: the joystick can only be moved horizontally.</li>
+
++ *Only vertical*: the joystick can only be moved vertically.
+
++ *Only horizontal*: the joystick can only be moved horizontally.
   
 ### Shape:
 Specify whether the shape of region - within which joystick can move - needs to be a circle or a square.
@@ -45,7 +77,9 @@ Specify whether the shape of region - within which joystick can move - needs to 
 
 ### Threshold
 Specify the minimum distance needed to trigger an output message.  This is a value between 0 and 1:
+
 + `0`: the center of the joystick, so the output message will always be sent.
+
 + `1`: the outer boundary of the joystick, which means that only an output message will be send when the joystick reaches the boundaries.
 
 ![Threshold](https://user-images.githubusercontent.com/14224149/103476432-bcfc4200-4db5-11eb-9deb-b8028350b920.png)
@@ -64,64 +98,8 @@ Specify a custom CSS color of the joystick's center circle.  The outer circle wi
 
 Remark: this property will only be displayed when the checkbox *"Use the Node-RED theme base color"* is not activated.
 
-### Send output msg at every change
-When activated, output messages will be send for every moment.
-
-As in the following example flow:
-
-![every change](https://user-images.githubusercontent.com/14224149/103482260-242eec00-4de0-11eb-827a-9419c51a81f4.png)
-```
-[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff0400","threshold":"1","directions":"all","shape":"circle","sendMovements":true,"send45Directions":false,"send90Directions":false,"x":1100,"y":620,"wires":[["762cb5c1.d2c2ac"]]},{"id":"762cb5c1.d2c2ac","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":1290,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
-```
-
-![joystick_all_demo](https://user-images.githubusercontent.com/14224149/103482318-7c65ee00-4de0-11eb-91ac-65f8b921bf93.gif)
-
-CAUTION: a lot of messages will be sent!
-
-### Send output msg at 45° direction change
-When activated, output messages will be send as soon as a direction has been determined (after reaching the threshold).  In this case the directions are split with a 45° angle:
-
-![45 degrees](https://user-images.githubusercontent.com/14224149/103476549-2fb9ed00-4db7-11eb-99be-4d5bb2724fb6.png)
-
-As in the following example flow:
-
-![45 degrees flow](https://user-images.githubusercontent.com/14224149/103481520-d4e6bc80-4ddb-11eb-8a97-fe2f367fcbcc.png)
-```
-[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff1900","threshold":"1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":true,"send90Directions":false,"x":1100,"y":620,"wires":[["1dba6d92.cd0762"]]},{"id":"1dba6d92.cd0762","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload.direction.angle","targetType":"msg","statusVal":"","statusType":"auto","x":1320,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
-```
-
-![joystick_45_demo](https://user-images.githubusercontent.com/14224149/103481566-22fbc000-4ddc-11eb-80b5-b4c220f1ea31.gif)
-
-### Interval (45)
-Specify at which interval (seconds) the same (45°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.
-
-In the following example flow the interval is set to 1 second, which means the same directions will be repeated every second.  This repeation wil stop when the direction changes or when the joystick is released (and goes back to its center):
-
-![joystick_timer](https://user-images.githubusercontent.com/14224149/103483512-06fe1b80-4de8-11eb-9b1b-1547d0c31453.gif)
-
-### Send output msg at 90° direction change
-When activated, output messages will be send as soon as a plain direction has been determined (after reaching the threshold).  In this case the directions are split with a 90° angle:
-
-![90 degrees](https://user-images.githubusercontent.com/14224149/103476600-9e974600-4db7-11eb-858a-2367cc0a1031.png)
-
-As in the following example flow:
-
-![image](https://user-images.githubusercontent.com/14224149/103481634-930a4600-4ddc-11eb-9dd2-07f96d28bee7.png)
-```
-[{"id":"6b7eddec.472ed4","type":"ui_joystick","z":"7f1827bd.8acfe8","group":"a434ad35.e8a6b","order":2,"width":"6","height":"6","name":"","useThemeColor":false,"color":"#ff1900","threshold":"1","directions":"all","shape":"circle","sendMovements":false,"send45Directions":false,"send90Directions":true,"x":1100,"y":620,"wires":[["1dba6d92.cd0762"]]},{"id":"1dba6d92.cd0762","type":"debug","z":"7f1827bd.8acfe8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload.direction.angle","targetType":"msg","statusVal":"","statusType":"auto","x":1320,"y":620,"wires":[]},{"id":"a434ad35.e8a6b","type":"ui_group","z":"","name":"Joystick demo","tab":"77a8be2.16f914","order":1,"disp":true,"width":"6","collapse":false},{"id":"77a8be2.16f914","type":"ui_tab","z":"","name":"Joystick","icon":"dashboard","disabled":false,"hidden":false}]
-```
-
-![joystick_90_demo](https://user-images.githubusercontent.com/14224149/103481620-7837d180-4ddc-11eb-8d0b-f3fd11357c71.gif)
-
-### Interval (90)
-Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.
-
-See the section *"Interval (45)"* above for a similar demo.
-
 ### Move joystick to its center when released
 When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at the position where it has been released.
-
-Remark: when this option is disabled, it is not possible to set *"Interval (45)"* or *"Interval (90)"*.  Because those timers are automatically stopped when the joystick is reset back to the center.  But when automatic centering is disabled, the timers would keep running...
 
 ## Use case
 
