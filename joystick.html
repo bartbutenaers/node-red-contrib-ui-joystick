@@ -16,6 +16,7 @@
         category: 'dashboard',
         color: 'rgb( 63, 173, 181)',
         defaults: {
+            name: {value: ''},
             group: {type: 'ui_group', required:true},
             order: {value: 0},
             width: {
@@ -31,16 +32,13 @@
                 }},
             height: {value: 0},
             name: {value: ''},
+            trigger: {value: "all"},
+            timeInterval: {value: 0},
             useThemeColor: {value: true},
             color: {value: "white"},
             threshold: {value: 0.1, validate: function(v) { return v >= 0 && v <= 1}},
             directions: {value: "all"},
             shape: {value: "circle"},
-            sendMovements: {value: true},
-            send45Directions: {value: false},
-            send90Directions: {value: false},
-            timeInterval45: {value: 0},
-            timeInterval90: {value: 0},
             centerAtRelease: {value: true}
         },
         inputs:1,
@@ -68,48 +66,27 @@
                 }
             });
             $("#node-input-useThemeColor").change();
-            
-            // Only show the timer(45) input field, when the 'output at 45° angle' checkbox is checked
-            $("#node-input-send45Directions").change(function() {
-                if(this.checked) {
-                    $("#timeInterval45Div").show();
-                }
-                else {
-                    $("#timeInterval45Div").hide();
-                }
-            });
-            $("#node-input-send45Directions").change();            
 
-            // Only show the timer(90) input field, when the 'output at 90° angle' checkbox is checked
-            $("#node-input-send90Directions").change(function() {
-                if(this.checked) {
-                    $("#timeInterval90Div").show();
+            // Only enable the 'Trigger' dropdown, when no interval (i.e. length 0) has been specified
+            $("#node-input-timeInterval").change(function() {
+                if(this.value > 0) {
+                    $("#node-input-trigger").val("all");
+                    $("#node-input-trigger").prop("disabled", true);
                 }
                 else {
-                    $("#timeInterval90Div").hide();
+                    $("#node-input-trigger").prop("disabled", false);
                 }
             });
-            $("#node-input-send90Directions").change();
-
-            // Only show the timer(90) input field, when the 'output at 90° angle' checkbox is checked
-            $("#node-input-centerAtRelease").change(function() {
-                if(this.checked) {
-                    $("#node-input-timeInterval45").prop('disabled', false);
-                    $("#node-input-timeInterval90").prop('disabled', false);
-                }
-                else {
-                    $("#node-input-timeInterval45").prop('disabled', true);
-                    $("#node-input-timeInterval90").prop('disabled', true);
-                    $("#node-input-timeInterval45").val(0);
-                    $("#node-input-timeInterval90").val(0);                    
-                }
-            });
-            $("#node-input-centerAtRelease").change();             
+            $("#node-input-timeInterval").change();               
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="ui_joystick">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
     <div class="form-row" id="template-row-group">
         <label for="node-input-group"><i class="fa fa-table"></i> Group</span></label>
         <input type="text" id="node-input-group">
@@ -119,6 +96,18 @@
         <input type="hidden" id="node-input-width">
         <input type="hidden" id="node-input-height">
         <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <div class="form-row">
+        <label for="node-input-timeInterval"><i class="fa fa-clock-o"></i> Interval</label>
+        <input type="number" id="node-input-timeInterval" min="0" step="0.1" style="width:80px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-trigger"><i class="fa fa-bolt"></i> Trigger</label>
+        <select id="node-input-trigger">
+            <option value="all">All moves</option>
+            <option value="d45">45° crossings</option>
+            <option value="d90">90° crossings</option>            
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-directions"><i class="fa fa-arrows"></i> Directions</label>
@@ -137,7 +126,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-threshold"><i class="fa fa-signal"></i> Threshold</label>
-        <input type="number" id="node-input-threshold" min="0" max="1" step="0.1">
+        <input type="number" id="node-input-threshold" min="0" max="1" step="0.1" style="width:80px;">
     </div>
     <div class="form-row">
         <input type="checkbox" id="node-input-useThemeColor" style="display: inline-block; width: auto; vertical-align: top;">
@@ -148,26 +137,6 @@
         <input type="color" id="node-input-color">
     </div>
     <div class="form-row">
-        <input type="checkbox" id="node-input-sendMovements" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-sendMovements" style="width:70%;"> Send output msg at every change</label>
-    </div>
-    <div class="form-row">
-        <input type="checkbox" id="node-input-send45Directions" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-send45Directions" style="width:70%;"> Send output msg at 45° direction change</label>
-    </div>
-    <div class="form-row" id="timeInterval45Div">
-        <label for="node-input-timeInterval45"><i class="fa fa-clock-o"></i> Interval (45)</label>
-        <input type="number" id="node-input-timeInterval45" min="0" step="0.1">
-    </div>
-    <div class="form-row">
-        <input type="checkbox" id="node-input-send90Directions" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-send90Directions" style="width:70%;"> Send output msg at 90° direction change</label>
-    </div>
-    <div class="form-row" id="timeInterval90Div">
-        <label for="node-input-timeInterval90"><i class="fa fa-clock-o"></i> Interval (90)</label>
-        <input type="number" id="node-input-timeInterval90" min="0" step="0.1">
-    </div>
-    <div class="form-row">
         <input type="checkbox" id="node-input-centerAtRelease" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-centerAtRelease" style="width:70%;"> Move joystick to its center when released</label>
     </div>
@@ -175,6 +144,15 @@
 <script type="text/x-red" data-help-name="ui_joystick">
     <p>A Node Red node to show a virtual joystick in the Node-RED dashboard.</p>
     <p>See the <a target="_blank" href="https://github.com/bartbutenaers/node-red-contrib-ui-joystick/blob/main/README.md">readme page</a> on my Github repository for more information.</p>
+    <p><strong>Interval:</strong><br/>
+    Specify at which interval (seconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center).  When the interval is <code>0</code>, the "Trigger" property determines which joystick events will cause the messages to be sent.</p> 
+    <p><strong>Trigger:</strong><br/>
+    When no interval has been specified (i.e. interval = 0), you need to specify which joystick events will result in output messages:
+    <ul>
+        <li><i>All:</i> for every move event.</li>
+        <li><i>45° crossings:</i> when crossing a 45° angle boundary.</li>
+        <li><i>90° crossings:</i> when crossing a 90° degree boundary.</li>
+    </ul></p>
     <p><strong>Directions:</strong><br/>
     Specify in which directions the joystick can be moved:
     <ul>
@@ -194,16 +172,7 @@
     When activated, the base color of the Node-RED dashboard theme will be used.  Otherwise a custom color needs to be specified.</p>  
     <p><strong>Color:</strong><br/>
     Specify a custom CSS color of the joystick.</p> 
-    <p><strong>Send output msg at every change:</strong><br/>
-    When activated, output messages will be send for every moment.</p>     
-    <p><strong>Send output msg at 45° direction change:</strong><br/>
-    When activated, output messages will be send as soon as a direction (at 45° angle) has been determined (after reaching the threshold).</p>
-    <p><strong>Interval (45):</strong><br/>
-    Specify at which interval (seconds) the same (45°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>     
-    <p><strong>Send output msg at 90° direction change:</strong><br/>
-    When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p>
-    <p><strong>Interval (90):</strong><br/>
-    Specify at which interval (seconds) the same (90°) direction should be repeated, as long as the threshold is exceeded.  When interval is 0, the messages won't be repeated.</p>  
+    When activated, output messages will be send as soon as a direction (at 90° angle) has been determined (after reaching the threshold).</p> 
     <p><strong>Move joystick to its center when released:</strong><br/>
     When activated, the joystick will automatically move back to its center when it is released.  Otherwise the joystick will remain at its release position.</p>     
 </script>
