@@ -38,7 +38,7 @@ module.exports = function(RED) {
         // https://discourse.nodered.org/t/custom-ui-node-layout-problems/7731/21?u=bartbutenaers)
         var html = String.raw`
         <script src="ui_joystick/js/nipplejs.js"></script>
-        <div id="joystickContainer_` + config.id + `" style="width:100%; height:100%; position:relative;" ng-init='init(` + configAsJson + `)'></div>
+        <div id="joystickContainer_` + config.id.replace(".","_") + `" style="width:100%; height:100%; position:relative;" ng-init='init(` + configAsJson + `)'></div>
         `;
         
         return html;
@@ -111,16 +111,27 @@ module.exports = function(RED) {
                         function sendOutputMsg(evt, data) {
                             // Don't send the entire data object (incl. instance) because then we get:
                             // "Uncaught RangeError: Maximum call stack size exceeded" ...
+                            // Moreover some data fields are confusing, so we will skip those in the output msg.
                             $scope.send({
                                 payload: {
-                                    angle: data.angle,
-                                    direction: data.direction,
+                                    angle: {
+                                        radian: data.angle.radian,
+                                        degree: data.angle.degree
+                                    },
+                                    direction: {
+                                        x: data.direction.x,
+                                        y: data.direction.y,
+                                        angle: data.direction.angle
+                                    },
                                     distance: data.distance,
-                                    force: data.force,
-                                    position: data.position,
-                                    pressure: data.pressure,
-                                    raw: data.raw,
-                                    vector: data.vector
+                                    position: {
+                                        x: data.position.x,
+                                        y: data.position.y
+                                    },
+                                    vector: {
+                                        x: data.vector.x,
+                                        y: data.vector.y
+                                    }
                                 },
                                 topic: evt.type
                             });
@@ -128,22 +139,18 @@ module.exports = function(RED) {
                 
                         $scope.init = function (config) {
                             $scope.config = config;
-                            
-                            $scope.containerDiv = document.getElementById('joystickContainer_' + $scope.config.id);
+                            $scope.lastData = null;;
+                            $scope.timer = null;
+
+                            $scope.containerDiv = $('#joystickContainer_' + $scope.config.id.replace(".","_"));
                             
                             // Create the nipple widget delayed, similar to their demo (https://github.com/yoannmoinet/nipplejs/blob/master/example/codepen-demo.html).
                             // Otherwise we can only move the inner circle around the contour of the outer circle ...
                             setTimeout(() => {
-                                // To make sure that the nipple fits into the parent div, we will set it's size (in pixels) to 65% of the minimum
-                                // dimension (width or height) of that parent div element.  We can't make it larger, because then the small moving 
-                                // circle doesn't fit into the parent div area.  Correction: we need to set the size - for some reason - smaller than
-                                // 50%, otherwise the small circle will jump away from the mouse position ;-(
-                                var size = Math.min($scope.containerDiv.clientWidth, $scope.containerDiv.clientHeight) * 0.49;
-
                                 var options = {
-                                    zone: $scope.containerDiv,                  // active zone where mouse and touch events are captured
+                                    zone: $scope.containerDiv[0],               // active zone where mouse and touch events are captured
                                     color: config.color,                        // the background CSS color of the nipple
-                                    size: size,                                  // size (in pixels) of the outer circle  --> TODO is default 100-> gelijk zetten aan de size??
+                                    size: 100,                                  // size (in pixels) of the outer circle
                                     threshold: parseFloat(config.threshold),    // minimum strength needed to trigger a directional event (0 = center / 1 = outer diameter)
                                     fadeTime: 250,                              // time it takes for joystick to fade-out and fade-in, when (de)activated
                                     multitouch: false,                          // whether it should be possible to have multiple nipples in a single zone
@@ -175,66 +182,65 @@ module.exports = function(RED) {
                                 }
 
                                 var manager = nipplejs.create(options);
-
-                                if (config.sendMovements) {
-                                    manager.on('move', function (evt, data) {
-                                        sendOutputMsg(evt, data);
-                                    });
-                                }
+                                
+                                // To make sure that the nipple fits into the parent div, we will set it's size (in pixels) to 65% of the minimum
+                                // dimension (width or height) of that parent div element.  We can't make it larger, because then the small moving 
+                                // circle doesn't fit into the parent div area.  Correction: we need to set the size - for some reason - smaller than
+                                // 50%, otherwise the small circle will jump away from the mouse position ;-(
+                                var scaleFactor = Math.min($scope.containerDiv[0].clientWidth, $scope.containerDiv[0].clientHeight) / 150;
+                                $scope.containerDiv.children(":first").css({ transform: 'scale(' + scaleFactor + ')' });
+                                
+                                //var outerCircle = $scope.containerDiv.find(".back");
+                                //outerCircle.css("border-width", "2px");
+                                //outerCircle.css("border-color", config.color);
+                                //outerCircle.css("border-style", "solid");
 
                                 // Fortunately there is an (undocumented) event "rested", which is called when the joystick is releaved an goes
                                 // back to the center point automatically ...
                                 manager.on('rested', function (evt, data) {
-                                    // Stop the previous timers, when available
-                                    if ($scope.timer45) {
-                                        clearInterval($scope.timer45);
-                                        $scope.timer45 = null;
+                                    // Stop the current timer, when available
+                                    if ($scope.timer) {
+                                        clearInterval($scope.timer);
+                                        $scope.timer = null;
                                     }
-                                    if ($scope.timer90) {
-                                        clearInterval($scope.timer90);
-                                        $scope.timer90 = null;
+                                    
+                                    // The previous last data is not relevant anymore, when the joystick is activated again ...
+                                    $scope.lastData = null;
+                                });
+                                
+                                // Map our event to a nipplejs event
+                                var nipplejsEvent;
+                                switch(config.trigger) {
+                                    case "all":
+                                        nipplejsEvent = "move";
+                                        break;
+                                    case "d45":
+                                        nipplejsEvent = "dir";
+                                        break;
+                                    case "d90":
+                                        nipplejsEvent = "plain";
+                                        break;
+                                }
+
+                                // Start listening to the specified event
+                                manager.on(nipplejsEvent, function (evt, data) {
+                                    // Remember the last data (for each event type)
+                                    $scope.lastData = data;
+                                    
+                                    if (config.timeInterval > 0) {
+                                        // Create a timer when it doesn't exist yet
+                                        if (!$scope.timer) {
+                                            $scope.timer = setInterval(function() {
+                                                // Resend the last output message again
+                                                sendOutputMsg(evt.type, $scope.lastData);
+                                            }, config.timeInterval * 1000);                                        
+                                        }
+                                    }
+                                    else {
+                                        // When no interval has been specified, the event will be send immediately as an output message.
+                                        sendOutputMsg(evt, data);
                                     }
                                 });
-
-                                if (config.send45Directions) {
-                                    manager.on('dir', function (evt, data) {
-                                        // Stop the previous timer, when available
-                                        if ($scope.timer45) {
-                                            clearInterval($scope.timer45);
-                                            $scope.timer45 = null;
-                                        }
-                                        
-                                        sendOutputMsg(evt, data);
-                                        
-                                        // Start a new timer, when an interval (greater than 0) has been specified
-                                        if (config.timeInterval45 > 0) {
-                                            $scope.timer45 = setInterval(function() {
-                                                // Resend the last output message again
-                                                sendOutputMsg(evt, data);
-                                            }, config.timeInterval45 * 1000);
-                                        }
-                                    });
-                                }
-                                
-                                if (config.send90Directions) {
-                                   manager.on('plain', function (evt, data) {
-                                        // Stop the previous timer, when available
-                                        if ($scope.timer90) {
-                                            clearInterval($scope.timer90);
-                                            $scope.timer90 = null;
-                                        }
-                                        
-                                        sendOutputMsg(evt, data);
-                                        
-                                        // Start a new timer, when an interval (greater than 0) has been specified
-                                        if (config.timeInterval90 > 0) {
-                                            $scope.timer90 = setInterval(function() {
-                                                // Resend the last output message again
-                                                sendOutputMsg(evt, data);
-                                            }, config.timeInterval90 * 1000);
-                                        }
-                                    });
-                                }
                             }, 200);
                         }
 
