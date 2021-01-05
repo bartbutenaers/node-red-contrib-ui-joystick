@@ -208,6 +208,15 @@ module.exports = function(RED) {
                                     $scope.lastData = null;
                                 });
                                 
+                                $scope.$on("$destroy", function() {
+                                    // Stop the current timer, when available.
+                                    // Because the timer might be still running, when the flow is being deployed
+                                    if ($scope.timer) {
+                                        clearInterval($scope.timer);
+                                        $scope.timer = null;
+                                    }
+                                });
+                                
                                 // Map our event to a nipplejs event
                                 var nipplejsEvent;
                                 switch(config.trigger) {
