@@ -20,7 +20,7 @@
             group: {type: 'ui_group', required:true},
             order: {value: 0},
             width: {
-                value: 0,
+                value: 3,
                 validate: function(v) {
                     var valid = true
                     var width = v||0;
@@ -30,7 +30,7 @@
                     $("#node-input-size").toggleClass("input-error",!valid);
                     return valid;
                 }},
-            height: {value: 0},
+            height: {value: 3},
             name: {value: ''},
             trigger: {value: "all"},
             timeInterval: {value: 0},
@@ -99,7 +99,8 @@
     </div>
     <div class="form-row">
         <label for="node-input-timeInterval"><i class="fa fa-clock-o"></i> Interval</label>
-        <input type="number" id="node-input-timeInterval" min="0" step="0.1" style="width:80px;">
+        <input type="number" id="node-input-timeInterval" min="0" step="100" style="width:80px;">
+        <span style="margin-left:10px;">MilliSec.</span>
     </div>
     <div class="form-row">
         <label for="node-input-trigger"><i class="fa fa-bolt"></i> Trigger</label>
@@ -145,7 +146,7 @@
     <p>A Node Red node to show a virtual joystick in the Node-RED dashboard.</p>
     <p>See the <a target="_blank" href="https://github.com/bartbutenaers/node-red-contrib-ui-joystick/blob/main/README.md">readme page</a> on my Github repository for more information.</p>
     <p><strong>Interval:</strong><br/>
-    Specify at which interval (seconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center).  When the interval is <code>0</code>, the "Trigger" property determines which joystick events will cause the messages to be sent.</p> 
+    Specify at which interval (milliseconds) the output messages should be send.  The sending starts when the threshold is exceeded, and stops when the joystick is released (and returns to its center).  When the interval is <code>0</code>, the "Trigger" property determines which joystick events will cause the messages to be sent.</p> 
     <p><strong>Trigger:</strong><br/>
     When no interval has been specified (i.e. interval = 0), you need to specify which joystick events will result in output messages:
     <ul>
