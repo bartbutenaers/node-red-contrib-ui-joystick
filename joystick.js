@@ -123,11 +123,9 @@ module.exports = function(RED) {
                                         y: data.direction.y,
                                         angle: data.direction.angle
                                     },
-                                    distance: data.distance,
-                                    position: {
-                                        x: data.position.x,
-                                        y: data.position.y
-                                    },
+                                    // The distance - from the center (0) - to the outer circle (50px = unscaled radius).
+                                    // We will multiply the distance * 2 to convert the pixels to a percentage.
+                                    distance: data.distance * 2,
                                     vector: {
                                         x: data.vector.x,
                                         y: data.vector.y
@@ -187,13 +185,13 @@ module.exports = function(RED) {
                                 // dimension (width or height) of that parent div element.  We can't make it larger, because then the small moving 
                                 // circle doesn't fit into the parent div area.  Correction: we need to set the size - for some reason - smaller than
                                 // 50%, otherwise the small circle will jump away from the mouse position ;-(
-                                var scaleFactor = Math.min($scope.containerDiv[0].clientWidth, $scope.containerDiv[0].clientHeight) / 150;
-                                $scope.containerDiv.children(":first").css({ transform: 'scale(' + scaleFactor + ')' });
+                                $scope.scaleFactor = Math.min($scope.containerDiv[0].clientWidth, $scope.containerDiv[0].clientHeight) / 150;
+                                $scope.containerDiv.children(":first").css({ transform: 'scale(' + $scope.scaleFactor + ')' });
                                 
-                                //var outerCircle = $scope.containerDiv.find(".back");
-                                //outerCircle.css("border-width", "2px");
-                                //outerCircle.css("border-color", config.color);
-                                //outerCircle.css("border-style", "solid");
+                                $scope.outerCircle = $scope.containerDiv.find(".back");
+                                /*scope.outerCircle.css("border-width", "3px");
+                                scope.outerCircle.css("border-color", "blue");
+                                scope.outerCircle.css("border-style", "solid");*/
 
                                 // Fortunately there is an (undocumented) event "rested", which is called when the joystick is releaved an goes
                                 // back to the center point automatically ...
@@ -206,6 +204,24 @@ module.exports = function(RED) {
                                     
                                     // The previous last data is not relevant anymore, when the joystick is activated again ...
                                     $scope.lastData = null;
+                                    
+                                    
+                                    sendOutputMsg(evt.type, {
+                                        angle: {
+                                            radian: 0,
+                                            degree: 0
+                                        },
+                                        direction: {
+                                            x: null,
+                                            y: null,
+                                            angle: null
+                                        },
+                                        distance: 0,
+                                        vector: {
+                                            x: 0,
+                                            y: 0
+                                        }
+                                    });
                                 });
                                 
                                 $scope.$on("$destroy", function() {
@@ -242,7 +258,7 @@ module.exports = function(RED) {
                                             $scope.timer = setInterval(function() {
                                                 // Resend the last output message again
                                                 sendOutputMsg(evt.type, $scope.lastData);
-                                            }, config.timeInterval * 1000);                                        
+                                            }, config.timeInterval);                                        
                                         }
                                     }
                                     else {
