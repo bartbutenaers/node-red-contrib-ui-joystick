@@ -131,7 +131,7 @@ module.exports = function(RED) {
                                         y: data.vector.y
                                     }
                                 },
-                                topic: evt.type
+                                topic: evt
                             });
                         }
                 
@@ -179,7 +179,7 @@ module.exports = function(RED) {
                                         break;
                                 }
 
-                                var manager = nipplejs.create(options);
+                                $scope.manager = nipplejs.create(options);
                                 
                                 // To make sure that the nipple fits into the parent div, we will set it's size (in pixels) to 65% of the minimum
                                 // dimension (width or height) of that parent div element.  We can't make it larger, because then the small moving 
@@ -195,7 +195,7 @@ module.exports = function(RED) {
 
                                 // Fortunately there is an (undocumented) event "rested", which is called when the joystick is releaved an goes
                                 // back to the center point automatically ...
-                                manager.on('rested', function (evt, data) {
+                                $scope.manager.on('rested', function (evt, data) {
                                     // Stop the current timer, when available
                                     if ($scope.timer) {
                                         clearInterval($scope.timer);
@@ -205,7 +205,7 @@ module.exports = function(RED) {
                                     // The previous last data is not relevant anymore, when the joystick is activated again ...
                                     $scope.lastData = null;
                                     
-                                    
+                                    // Send a dummy message when rested
                                     sendOutputMsg(evt.type, {
                                         angle: {
                                             radian: 0,
@@ -225,6 +225,10 @@ module.exports = function(RED) {
                                 });
                                 
                                 $scope.$on("$destroy", function() {
+                                    if ($scope.manager) {
+                                        $scope.manager.destroy();
+                                    }
+                                    
                                     // Stop the current timer, when available.
                                     // Because the timer might be still running, when the flow is being deployed
                                     if ($scope.timer) {
@@ -248,7 +252,7 @@ module.exports = function(RED) {
                                 }
 
                                 // Start listening to the specified event
-                                manager.on(nipplejsEvent, function (evt, data) {
+                                $scope.manager.on(nipplejsEvent, function (evt, data) {
                                     // Remember the last data (for each event type)
                                     $scope.lastData = data;
                                     
