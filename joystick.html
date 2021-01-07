@@ -41,13 +41,13 @@
             shape: {value: "circle"},
             centerAtRelease: {value: true}
         },
-        inputs:1,
+        inputs:0,
         outputs:1,
         icon: "font-awesome/fa-dot-circle-o",
         align: 'left',
-        paletteLabel:"Joystick",
+        paletteLabel:"joystick",
         label: function() {
-            return this.name || "Joystick";
+            return this.name || "joystick";
         },
         oneditprepare: function() {
             $("#node-input-size").elementSizer({
@@ -99,7 +99,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-timeInterval"><i class="fa fa-clock-o"></i> Interval</label>
-        <input type="number" id="node-input-timeInterval" min="0" step="100" style="width:80px;">
+        <input type="number" id="node-input-timeInterval" min="0" step="25" style="width:80px;">
         <span style="margin-left:10px;">MilliSec.</span>
     </div>
     <div class="form-row">
