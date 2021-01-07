@@ -71,10 +71,10 @@
             $("#node-input-timeInterval").change(function() {
                 if(this.value > 0) {
                     $("#node-input-trigger").val("all");
-                    $("#node-input-trigger").prop("disabled", true);
+                    $("#triggerEventDiv").hide();
                 }
                 else {
-                    $("#node-input-trigger").prop("disabled", false);
+                    $("#triggerEventDiv").show();
                 }
             });
             $("#node-input-timeInterval").change();               
@@ -102,7 +102,7 @@
         <input type="number" id="node-input-timeInterval" min="0" step="25" style="width:80px;">
         <span style="margin-left:10px;">MilliSec.</span>
     </div>
-    <div class="form-row">
+    <div class="form-row" id="triggerEventDiv">
         <label for="node-input-trigger"><i class="fa fa-bolt"></i> Trigger</label>
         <select id="node-input-trigger">
             <option value="all">All moves</option>
